@@ -1529,6 +1529,18 @@ islice_reduce(isliceobject *lz)
      * then 'setstate' with the next and count
      */
     PyObject *stop;
+    if (lz->it == NULL) {
+        PyObject *empty_list;
+        PyObject *empty_it;
+        empty_list = PyList_New(0);
+        if (empty_list == NULL)
+            return NULL;
+        empty_it = PyObject_GetIter(empty_list);
+        Py_DECREF(empty_list);
+        if (empty_it == NULL)
+            return NULL;
+        return Py_BuildValue("O(Nn)n", Py_TYPE(lz), empty_it, 0, 0);
+    }
     if (lz->stop == -1) {
         stop = Py_None;
         Py_INCREF(stop);
